@@ -28,3 +28,4 @@ kubeconfig-merge
 #vscode
 .vscode
 coverage.*
+dist/
