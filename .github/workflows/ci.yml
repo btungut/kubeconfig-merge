@@ -1,0 +1,42 @@
+name: CI
+on:
+  push:
+  pull_request:
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.19
+        cache: true
+        cache-dependency-path: go.sum
+
+    - name: Install dependencies
+      run: go get .
+
+    - name: Ensure gofmt
+      run: test -z "$(gofmt -s -d .)"
+
+    - name: Ensure go.mod is already tidied
+      run: go mod tidy && git diff --no-patch --exit-code
+
+    - name: Build with Goreleaser
+      uses: goreleaser/goreleaser-action@v2
+      with:
+        version: latest
+        args: release --snapshot --rm-dist
+
+    - name: Test with the Go CLI
+      run: go test -json > TestResults.json
+
+    - name: Upload Go test results
+      uses: actions/upload-artifact@v3
+      with:
+        name: go-test-results
+        path: TestResults.json
