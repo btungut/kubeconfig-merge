@@ -33,10 +33,31 @@ jobs:
         args: release --snapshot --rm-dist
 
     - name: Test with the Go CLI
-      run: go test -json > TestResults.json
+      run: go test -coverprofile=coverage.txt -covermode count .
+
+    - name: Generate coverage reports
+      run: |
+        go get github.com/boumenot/gocover-cobertura
+        go build github.com/boumenot/gocover-cobertura
+        go test -coverprofile=coverage.txt -covermode count .
+        go tool cover -html=coverage.txt -o=coverage.html
+        ./gocover-cobertura < coverage.txt > coverage.xml
+
+    - name: Code Coverage Summary
+      uses: irongut/CodeCoverageSummary@v1.3.0
+      with:
+        filename: coverage.xml
+        badge: true
+        fail_below_min: true
+        format: markdown
+        hide_branch_rate: false
+        hide_complexity: true
+        indicators: true
+        output: both
+        thresholds: '50 75'
 
     - name: Upload Go test results
       uses: actions/upload-artifact@v3
       with:
-        name: go-test-results
-        path: TestResults.json
+        name: go-test-coverage-report
+        path: coverage.html
