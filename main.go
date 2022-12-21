@@ -172,7 +172,7 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	
+
 	var fileName = filepath.Base(*filePtr)
 	result, err := Merge(*kubeConfig, *toBeAppend, *namePtr, fileName[:len(fileName)-len(filepath.Ext(fileName))])
 	if err != nil {

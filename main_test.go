@@ -122,10 +122,10 @@ func Test_Merge_ExplicitlySetName(t *testing.T) {
 	result, err := Merge(*kubeConfig, *toBeAddedKubeConfig, explicitName, fileName)
 	assert.NoError(t, err)
 
-	assert.Equal(t, len(result.Contexts), countBeforeMerge + 1)
-	assert.Equal(t, len(result.Clusters), countBeforeMerge + 1)
-	assert.Equal(t, len(result.Users), countBeforeMerge + 1)
-	
+	assert.Equal(t, len(result.Contexts), countBeforeMerge+1)
+	assert.Equal(t, len(result.Clusters), countBeforeMerge+1)
+	assert.Equal(t, len(result.Users), countBeforeMerge+1)
+
 	assert.EqualValues(t, result.Contexts[countBeforeMerge].Name, explicitName)
 	assert.EqualValues(t, result.Clusters[countBeforeMerge].Name, explicitName)
 	assert.EqualValues(t, result.Users[countBeforeMerge].Name, explicitName)
@@ -145,10 +145,10 @@ func Test_Merge_ImplicitlySetName(t *testing.T) {
 	result, err := Merge(*kubeConfig, *toBeAddedKubeConfig, "", fileName)
 	assert.NoError(t, err)
 
-	assert.Equal(t, len(result.Contexts), countBeforeMerge + 1)
-	assert.Equal(t, len(result.Clusters), countBeforeMerge + 1)
-	assert.Equal(t, len(result.Users), countBeforeMerge + 1)
-	
+	assert.Equal(t, len(result.Contexts), countBeforeMerge+1)
+	assert.Equal(t, len(result.Clusters), countBeforeMerge+1)
+	assert.Equal(t, len(result.Users), countBeforeMerge+1)
+
 	assert.EqualValues(t, result.Contexts[countBeforeMerge].Name, fileName)
 	assert.EqualValues(t, result.Clusters[countBeforeMerge].Name, fileName)
 	assert.EqualValues(t, result.Users[countBeforeMerge].Name, fileName)
