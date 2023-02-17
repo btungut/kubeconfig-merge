@@ -31,3 +31,7 @@ In addition to that, I am currently working with more than 20 customers, which r
 
 ### `./kubeconfig-merge --file valid-default-cluster.yaml --name foo`
 ![kubeconfig-merge with name](.assets/kubeconfig-merge-02.png)
+
+## Contributors
+[Ohki Nozomu](https://github.com/ohkinozomu)
+ 
