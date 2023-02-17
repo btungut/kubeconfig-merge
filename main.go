@@ -56,7 +56,7 @@ type KubectlClusterWithName struct {
 
 const KUBECONFIG_ENV = "KUBECONFIG"
 const KUBECONFIG_ENV_KEY = "$KUBECONFIG"
-const KUBECONFIG_DEFAULT_PATH = "~/kube/config"
+const KUBECONFIG_DEFAULT_PATH = "~/.kube/config"
 
 func ParseKubeConfig(path string) (*KubectlConfig, error) {
 
@@ -77,32 +77,32 @@ func ParseKubeConfig(path string) (*KubectlConfig, error) {
 func validate(kubectlConfig KubectlConfig, name string) error {
 
 	if len(kubectlConfig.Clusters) != 1 {
-		return errors.New("Only one cluster can be merged into original kubeconfig")
+		return errors.New("only one cluster can be merged into original kubeconfig")
 	}
 
 	if len(kubectlConfig.Users) != 1 {
-		return errors.New("Only one user can be merged into original kubeconfig")
+		return errors.New("only one user can be merged into original kubeconfig")
 	}
 
 	if len(kubectlConfig.Contexts) != 1 {
-		return errors.New("Only one context can be merged into original kubeconfig")
+		return errors.New("only one context can be merged into original kubeconfig")
 	}
 
 	for _, v := range kubectlConfig.Clusters {
 		if strings.EqualFold(v.Name, name) {
-			return errors.New(fmt.Sprintf("A cluster entry with %s already exists in kubeconfig, merge failed!", name))
+			return fmt.Errorf("a cluster entry with %s already exists in kubeconfig, merge failed", name)
 		}
 	}
 
 	for _, v := range kubectlConfig.Contexts {
 		if strings.EqualFold(v.Name, name) {
-			return errors.New(fmt.Sprintf("A context entry with %s already exists in kubeconfig, merge failed!", name))
+			return fmt.Errorf("a context entry with %s already exists in kubeconfig, merge failed", name)
 		}
 	}
 
 	for _, v := range kubectlConfig.Users {
 		if strings.EqualFold(v.Name, name) {
-			return errors.New(fmt.Sprintf("A user entry with %s already exists in kubeconfig, merge failed!", name))
+			return fmt.Errorf("a user entry with %s already exists in kubeconfig, merge failed", name)
 		}
 	}
 
@@ -144,10 +144,8 @@ func getKubeConfigPath(passedValue string) string {
 
 		// case1: env variable exists
 		kubeConfigPath = os.Getenv(KUBECONFIG_ENV)
+		// case2: fallback to default path
 		if len(kubeConfigPath) == 0 {
-			log.Fatalf("%s exists with no value!", KUBECONFIG_ENV)
-		} else {
-			// case2: fallback to default path
 			log.Printf("%s env variable does not exist. Default %s path will be used\n", KUBECONFIG_ENV, KUBECONFIG_DEFAULT_PATH)
 		}
 	}
@@ -158,7 +156,7 @@ func getKubeConfigPath(passedValue string) string {
 func main() {
 	kubeConfigPtr := flag.String("kubeconfig", "", fmt.Sprintf("path to the kubeconfig file (defaults '%s' or '%s')", KUBECONFIG_ENV_KEY, KUBECONFIG_DEFAULT_PATH))
 	filePtr := flag.String("file", "", "path to the yaml file that to be append into kubeconfig")
-	namePtr := flag.String("name", "", fmt.Sprintf("Replaces the name of context, user and cluster (default file name of --file argument)"))
+	namePtr := flag.String("name", "", "Replaces the name of context, user and cluster (default file name of --file argument)")
 	flag.Parse()
 
 	var kubeConfigPath = getKubeConfigPath(*kubeConfigPtr)
@@ -185,5 +183,8 @@ func main() {
 	}
 
 	err = os.WriteFile(kubeConfigPath, data, 0644)
+	if err != nil {
+		log.Panic(err)
+	}
 	fmt.Printf("%s was modified successfully\n", kubeConfigPath)
 }
