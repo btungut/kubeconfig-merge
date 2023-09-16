@@ -1,3 +1,5 @@
+release:
+  name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}'
 builds:
   - env:
       - CGO_ENABLED=0
@@ -9,11 +11,6 @@ builds:
     goarch:
       - amd64
       - arm64
-archives:
-  name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}'
-  replacements:
-    amd64: x86_64
-
 checksum:
   name_template: 'checksums.txt'
 snapshot:
