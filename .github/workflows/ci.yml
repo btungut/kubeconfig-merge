@@ -33,7 +33,7 @@ jobs:
       uses: goreleaser/goreleaser-action@v2
       with:
         version: latest
-        args: release --snapshot --rm-dist
+        args: release --snapshot --clean
 
     - name: Test with the Go CLI
       run: go test -coverprofile=coverage.txt -covermode count .
