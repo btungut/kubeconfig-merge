@@ -1,5 +1,6 @@
 release:
   name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}'
+  draft: true
 builds:
   - env:
       - CGO_ENABLED=0
