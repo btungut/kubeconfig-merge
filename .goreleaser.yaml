@@ -13,8 +13,6 @@ builds:
       - arm64
 checksum:
   name_template: 'checksums.txt'
-snapshot:
-  name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}'
 changelog:
   sort: asc
   filters:
