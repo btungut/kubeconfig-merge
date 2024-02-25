@@ -74,17 +74,17 @@ func ParseKubeConfig(path string) (*KubectlConfig, error) {
 	return &kubeConfig, nil
 }
 
-func validate(kubectlConfig KubectlConfig, name string) error {
+func validate(toBeAppend KubectlConfig, kubectlConfig KubectlConfig, name string) error {
 
-	if len(kubectlConfig.Clusters) != 1 {
+	if len(toBeAppend.Clusters) != 1 {
 		return errors.New("only one cluster can be merged into original kubeconfig")
 	}
 
-	if len(kubectlConfig.Users) != 1 {
+	if len(toBeAppend.Users) != 1 {
 		return errors.New("only one user can be merged into original kubeconfig")
 	}
 
-	if len(kubectlConfig.Contexts) != 1 {
+	if len(toBeAppend.Contexts) != 1 {
 		return errors.New("only one context can be merged into original kubeconfig")
 	}
 
@@ -116,7 +116,7 @@ func Merge(kubeConfig KubectlConfig, toBeAppend KubectlConfig, name, toBeAppendF
 		newName = name
 	}
 
-	var err = validate(toBeAppend, toBeAppendFileName)
+	var err = validate(toBeAppend, kubeConfig, toBeAppendFileName)
 	if err != nil {
 		return nil, err
 	}
