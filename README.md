@@ -9,6 +9,29 @@
 If you are someone who works with a significant number of Kubernetes clusters, dealing with `kubecontext` in a manual way can be **boring** and also **result in problems**.
 In addition to that, I am currently working with more than 20 customers, which results in an average of five clusters per customer.
 
+## Install
+
+### Install on Linux
+
+The following instruction list covers all of the Linux distributions (Ubuntu, Debian, Redhat, CentOS, RHEL, etc.) that provide `sh` as an executable:
+
+```bash
+(
+    set -x
+    cd "$(mktemp -d)" &&
+        OS="$(uname | tr '[:upper:]' '[:lower:]')" &&
+        ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" &&
+        FILENAME="kubeconfig-merge_${OS}_${ARCH}" &&
+        curl -fsSLO "https://github.com/btungut/kubeconfig-merge/releases/latest/download/${FILENAME}" &&
+        sudo rm -rf /usr/local/bin/kubeconfig-merge &&
+        sudo cp "${FILENAME}" /usr/local/bin/kubeconfig-merge &&
+        sudo chmod +x /usr/local/bin/kubeconfig-merge
+)
+```
+
+### Install on Windows
+TBD
+
 
 ## Arguments
 
