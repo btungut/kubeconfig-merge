@@ -18,14 +18,13 @@ The following instruction list covers all of the Linux distributions (Ubuntu, De
 ```bash
 (
     set -x
+    EXEC_PATH="/usr/local/bin/kubeconfig-merge"
     cd "$(mktemp -d)" &&
         OS="$(uname | tr '[:upper:]' '[:lower:]')" &&
         ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" &&
         FILENAME="kubeconfig-merge_${OS}_${ARCH}" &&
         curl -fsSLO "https://github.com/btungut/kubeconfig-merge/releases/latest/download/${FILENAME}" &&
-        sudo rm -rf /usr/local/bin/kubeconfig-merge &&
-        sudo cp "${FILENAME}" /usr/local/bin/kubeconfig-merge &&
-        sudo chmod +x /usr/local/bin/kubeconfig-merge
+        sudo rm -rf "$EXEC_PATH" && sudo cp "${FILENAME}" "$EXEC_PATH" && sudo chmod +x "$EXEC_PATH"
 )
 ```
 
