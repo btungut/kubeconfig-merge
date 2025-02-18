@@ -31,7 +31,7 @@ func Test_Merge_ClusterNameConflict(t *testing.T) {
 
 	toBeAddedKubeConfig.Clusters[0].Name = kubeConfig.Clusters[0].Name
 
-	_, err := Merge(*kubeConfig, *toBeAddedKubeConfig, "", toBeAddedKubeConfig.Clusters[0].Name)
+	_, err := Merge(*kubeConfig, *toBeAddedKubeConfig, toBeAddedKubeConfig.Clusters[0].Name, false)
 	if err == nil {
 		t.Fatal()
 	}
@@ -44,7 +44,7 @@ func Test_Merge_ContextNameConflict(t *testing.T) {
 
 	toBeAddedKubeConfig.Contexts[0].Name = kubeConfig.Contexts[0].Name
 
-	_, err := Merge(*kubeConfig, *toBeAddedKubeConfig, "", toBeAddedKubeConfig.Contexts[0].Name)
+	_, err := Merge(*kubeConfig, *toBeAddedKubeConfig, toBeAddedKubeConfig.Contexts[0].Name, false)
 	if err == nil {
 		t.Fatal()
 	}
@@ -57,7 +57,7 @@ func Test_Merge_UserNameConflict(t *testing.T) {
 
 	toBeAddedKubeConfig.Users[0].Name = kubeConfig.Users[0].Name
 
-	_, err := Merge(*kubeConfig, *toBeAddedKubeConfig, "", toBeAddedKubeConfig.Users[0].Name)
+	_, err := Merge(*kubeConfig, *toBeAddedKubeConfig, toBeAddedKubeConfig.Users[0].Name, false)
 	if err == nil {
 		t.Fatal()
 	}
@@ -72,7 +72,7 @@ func Test_Merge_MultipleCluster(t *testing.T) {
 	newObj.Name = "new-cluster"
 	toBeAddedKubeConfig.Clusters = append(toBeAddedKubeConfig.Clusters, &newObj)
 
-	_, err := Merge(*kubeConfig, *toBeAddedKubeConfig, "", toBeAddedKubeConfig.Clusters[0].Name)
+	_, err := Merge(*kubeConfig, *toBeAddedKubeConfig, toBeAddedKubeConfig.Clusters[0].Name, false)
 	if err == nil {
 		t.Fatal()
 	}
@@ -87,7 +87,7 @@ func Test_Merge_MultipleContext(t *testing.T) {
 	newObj.Name = "new-context"
 	toBeAddedKubeConfig.Contexts = append(toBeAddedKubeConfig.Contexts, &newObj)
 
-	_, err := Merge(*kubeConfig, *toBeAddedKubeConfig, "", toBeAddedKubeConfig.Clusters[0].Name)
+	_, err := Merge(*kubeConfig, *toBeAddedKubeConfig, toBeAddedKubeConfig.Clusters[0].Name, false)
 	if err == nil {
 		t.Fatal()
 	}
@@ -102,7 +102,7 @@ func Test_Merge_MultipleUser(t *testing.T) {
 	newObj.Name = "new-user"
 	toBeAddedKubeConfig.Users = append(toBeAddedKubeConfig.Users, &newObj)
 
-	_, err := Merge(*kubeConfig, *toBeAddedKubeConfig, "", toBeAddedKubeConfig.Clusters[0].Name)
+	_, err := Merge(*kubeConfig, *toBeAddedKubeConfig, toBeAddedKubeConfig.Clusters[0].Name, false)
 	if err == nil {
 		t.Fatal()
 	}
@@ -119,7 +119,7 @@ func Test_Merge_ExplicitlySetName(t *testing.T) {
 	toBeAddedKubeConfig.Contexts[0].Name = explicitName
 	toBeAddedKubeConfig.Users[0].Name = explicitName
 
-	result, err := Merge(*kubeConfig, *toBeAddedKubeConfig, explicitName, fileName)
+	result, err := Merge(*kubeConfig, *toBeAddedKubeConfig, explicitName, false)
 	assert.NoError(t, err)
 
 	assert.Equal(t, len(result.Contexts), countBeforeMerge+1)
@@ -142,7 +142,7 @@ func Test_Merge_ImplicitlySetName(t *testing.T) {
 	toBeAddedKubeConfig.Contexts[0].Name = explicitName
 	toBeAddedKubeConfig.Users[0].Name = explicitName
 
-	result, err := Merge(*kubeConfig, *toBeAddedKubeConfig, "", fileName)
+	result, err := Merge(*kubeConfig, *toBeAddedKubeConfig, fileName, false)
 	assert.NoError(t, err)
 
 	assert.Equal(t, len(result.Contexts), countBeforeMerge+1)
@@ -152,4 +152,60 @@ func Test_Merge_ImplicitlySetName(t *testing.T) {
 	assert.EqualValues(t, result.Contexts[countBeforeMerge].Name, fileName)
 	assert.EqualValues(t, result.Clusters[countBeforeMerge].Name, fileName)
 	assert.EqualValues(t, result.Users[countBeforeMerge].Name, fileName)
+}
+
+func Test_Merge_DuplicatedContextClusterUser(t *testing.T) {
+	const fileName = "cluster-1"
+	var kubeConfig = getKubeConfig()
+	var toBeAddedKubeConfig = getKubeConfigFromPath(fileName + ".yaml")
+
+	result, err := Merge(*kubeConfig, *toBeAddedKubeConfig, fileName, false)
+	assert.Error(t, err)
+	assert.Nil(t, result)
+}
+
+func Test_Merge_DuplicatedContextClusterUser_WithOverride(t *testing.T) {
+	const fileName = "cluster-1"
+	var kubeConfig = getKubeConfig()
+	var toBeAddedKubeConfig = getKubeConfigFromPath(fileName + ".yaml")
+
+	result, err := Merge(*kubeConfig, *toBeAddedKubeConfig, fileName, true)
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+}
+
+func Test_ParseKubeConfig(t *testing.T) {
+	const fileName = "kubeconfig.yaml"
+	kubeConfig, err := ParseKubeConfig(filepath.Join("test/data", fileName))
+	assert.NoError(t, err)
+	assert.NotNil(t, kubeConfig)
+}
+
+func Test_ParseKubeConfig_NotExistingFile(t *testing.T) {
+	const fileName = "not-existing-file.yaml"
+	kubeConfig, err := ParseKubeConfig(filepath.Join("test/data", fileName))
+	assert.Error(t, err)
+	assert.Nil(t, kubeConfig)
+}
+
+func Test_ValidateOnlyOneContext(t *testing.T) {
+	var kubeConfig = getKubeConfig()
+	var kc1 = getKubeConfigFromPath("valid-default-cluster.yaml")
+	var kc2 = getKubeConfigFromPath("valid-non-default-cluster.yaml")
+
+	//merge them
+	kc1.Clusters = append(kc1.Clusters, kc2.Clusters...)
+	kc1.Users = append(kc1.Users, kc2.Users...)
+	kc1.Contexts = append(kc1.Contexts, kc2.Contexts...)
+
+	err := ValidateOnlyOneContext(*kc1, *kubeConfig)
+	assert.Error(t, err)
+}
+
+func Test_ValidateDuplication(t *testing.T) {
+	var kc1 = getKubeConfig()
+	var kc2 = getKubeConfigFromPath("cluster-1.yaml")
+
+	err := ValidateDuplication(*kc1, *kc2)
+	assert.Error(t, err)
 }

@@ -5,11 +5,19 @@
 ![build](https://img.shields.io/github/actions/workflow/status/btungut/kubeconfig-merge/ci.yml?branch=master)
 ![go](https://img.shields.io/github/go-mod/go-version/btungut/kubeconfig-merge)
 
-## Why is it developed?
-If you are someone who works with a significant number of Kubernetes clusters, dealing with `kubecontext` in a manual way can be **boring** and also **result in problems**.
-In addition to that, I am currently working with more than 20 customers, which results in an average of five clusters per customer.
+# 🌟 kubeconfig-merge
 
-## Install
+`kubeconfig-merge` is a lightweight and efficient CLI tool designed to **merge multiple Kubernetes `kubeconfig` files** into a single, well-structured configuration. It ensures that the resulting configuration is clean, free of conflicts, and compatible with `kubectl` and other Kubernetes clients.
+
+## 🚀 Features
+
+✔ **Merge multiple `kubeconfig` files** into one unified configuration  
+✔ **Preserve existing contexts, clusters, and users** without conflicts  
+✔ **Ensure a clean and well-structured config file**  
+✔ **Works seamlessly with `kubectl` and Kubernetes clients**  
+✔ **Lightweight, fast, and easy to use**  
+
+## 📌 Installation
 
 ### Install on Linux
 
@@ -25,7 +33,6 @@ The following instruction list covers all of the Linux distributions (Ubuntu, De
         FILENAME="kubeconfig-merge_${OS}_${ARCH}" &&
         curl -fsSLO "https://github.com/btungut/kubeconfig-merge/releases/latest/download/${FILENAME}" &&
         sudo rm -rf "$EXEC_PATH" && sudo cp "${FILENAME}" "$EXEC_PATH" && sudo chmod +x "$EXEC_PATH"
-)
 ```
 
 ### Install on Windows
@@ -34,26 +41,16 @@ TBD
 
 ## Arguments
 
-| Argument     | Description                                                                | Default                                        |
-|--------------|----------------------------------------------------------------------------|------------------------------------------------|
-| file       | The additional kubeconfig file | *Required* |
-| kubeconfig | The kubeconfig file which to be append into        | `KUBECONFIG` env variable, or `~/.kube/config` |
-| name       | Context, cluster and user name of new entries                              | File name of `--file`|
+| Argument   | Type    | Description                                     | Default                                        |
+| ---------- | ------- | ----------------------------------------------- | ---------------------------------------------- |
+| kubeconfig | string  | The kubeconfig file which to be append into     | `KUBECONFIG` env variable, or `~/.kube/config` |
+| file       | string  | To be appended kubeconfig file                  | **Required**                                   |
+| override   | boolean | Use file name for the cluster, context and user | Optional                                       |
+
 
 ## Examples
 
----
+
 ### `./kubeconfig-merge --file valid-default-cluster.yaml`
 
 ![kubeconfig-merge without name](.assets/kubeconfig-merge-01.png)
-
-<br/>
-
----
-
-### `./kubeconfig-merge --file valid-default-cluster.yaml --name foo`
-![kubeconfig-merge with name](.assets/kubeconfig-merge-02.png)
-
-## Contributors
-[Ohki Nozomu](https://github.com/ohkinozomu)
- 
