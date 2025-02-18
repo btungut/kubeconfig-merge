@@ -11,10 +11,10 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Go
-      uses: actions/setup-go@v3
+      uses: actions/setup-go@v5
       with:
         go-version: 1.23.6
         cache: true
@@ -30,7 +30,7 @@ jobs:
       run: go mod tidy && git diff --no-patch --exit-code
 
     - name: Build with Goreleaser
-      uses: goreleaser/goreleaser-action@v2
+      uses: goreleaser/goreleaser-action@v6
       with:
         version: latest
         args: release --snapshot --clean
@@ -60,7 +60,7 @@ jobs:
         thresholds: '50 75'
 
     - name: Upload Go test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: go-test-coverage-report
         path: coverage.html
