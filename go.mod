@@ -1,10 +1,10 @@
 module github.com/btungut/kubeconfig-merge
 
-go 1.19
+go 1.23.6
 
 require (
-	github.com/google/uuid v1.3.0
-	github.com/stretchr/testify v1.8.1
+	github.com/google/uuid v1.6.0
+	github.com/stretchr/testify v1.10.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
