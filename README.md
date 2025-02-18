@@ -33,6 +33,7 @@ The following instruction list covers all of the Linux distributions (Ubuntu, De
         FILENAME="kubeconfig-merge_${OS}_${ARCH}" &&
         curl -fsSLO "https://github.com/btungut/kubeconfig-merge/releases/latest/download/${FILENAME}" &&
         sudo rm -rf "$EXEC_PATH" && sudo cp "${FILENAME}" "$EXEC_PATH" && sudo chmod +x "$EXEC_PATH"
+)   
 ```
 
 ### Install on Windows
