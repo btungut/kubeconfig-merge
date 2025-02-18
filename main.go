@@ -81,7 +81,7 @@ func ParseKubeConfig(path string) (*KubectlConfig, error) {
 	return &kubeConfig, nil
 }
 
-func validateOnlyOneContext(toBeAppend KubectlConfig, kubectlConfig KubectlConfig) error {
+func ValidateOnlyOneContext(toBeAppend KubectlConfig, kubectlConfig KubectlConfig) error {
 
 	if len(toBeAppend.Clusters) != 1 {
 		return errors.New("only one cluster can be merged into original kubeconfig")
@@ -98,7 +98,7 @@ func validateOnlyOneContext(toBeAppend KubectlConfig, kubectlConfig KubectlConfi
 	return nil
 }
 
-func validateDuplication(toBeAppend KubectlConfig, kubectlConfig KubectlConfig) error {
+func ValidateDuplication(toBeAppend KubectlConfig, kubectlConfig KubectlConfig) error {
 
 	for _, v1 := range kubectlConfig.Clusters {
 		for _, v2 := range toBeAppend.Clusters {
@@ -129,7 +129,7 @@ func validateDuplication(toBeAppend KubectlConfig, kubectlConfig KubectlConfig) 
 
 func Merge(kubeConfig KubectlConfig, toBeAppend KubectlConfig, name string, override bool) (*KubectlConfig, error) {
 
-	var err = validateOnlyOneContext(toBeAppend, kubeConfig)
+	var err = ValidateOnlyOneContext(toBeAppend, kubeConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +141,7 @@ func Merge(kubeConfig KubectlConfig, toBeAppend KubectlConfig, name string, over
 	toBeAppend.Contexts[0].Context.User = name
 
 	var needOverride = false
-	err = validateDuplication(toBeAppend, kubeConfig)
+	err = ValidateDuplication(toBeAppend, kubeConfig)
 	if err != nil {
 		if !override {
 			return nil, err

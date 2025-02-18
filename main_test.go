@@ -173,3 +173,39 @@ func Test_Merge_DuplicatedContextClusterUser_WithOverride(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, result)
 }
+
+func Test_ParseKubeConfig(t *testing.T) {
+	const fileName = "kubeconfig.yaml"
+	kubeConfig, err := ParseKubeConfig(filepath.Join("test/data", fileName))
+	assert.NoError(t, err)
+	assert.NotNil(t, kubeConfig)
+}
+
+func Test_ParseKubeConfig_NotExistingFile(t *testing.T) {
+	const fileName = "not-existing-file.yaml"
+	kubeConfig, err := ParseKubeConfig(filepath.Join("test/data", fileName))
+	assert.Error(t, err)
+	assert.Nil(t, kubeConfig)
+}
+
+func Test_ValidateOnlyOneContext(t *testing.T) {
+	var kubeConfig = getKubeConfig()
+	var kc1 = getKubeConfigFromPath("valid-default-cluster.yaml")
+	var kc2 = getKubeConfigFromPath("valid-non-default-cluster.yaml")
+
+	//merge them
+	kc1.Clusters = append(kc1.Clusters, kc2.Clusters...)
+	kc1.Users = append(kc1.Users, kc2.Users...)
+	kc1.Contexts = append(kc1.Contexts, kc2.Contexts...)
+
+	err := ValidateOnlyOneContext(*kc1, *kubeConfig)
+	assert.Error(t, err)
+}
+
+func Test_ValidateDuplication(t *testing.T) {
+	var kc1 = getKubeConfig()
+	var kc2 = getKubeConfigFromPath("cluster-1.yaml")
+
+	err := ValidateDuplication(*kc1, *kc2)
+	assert.Error(t, err)
+}
