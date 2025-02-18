@@ -205,8 +205,7 @@ func getKubeConfigPath(passedValue string) string {
 func main() {
 	kubeConfigPtr := flag.String("kubeconfig", "", fmt.Sprintf("path to the kubeconfig file (defaults '%s' or '%s')", KUBECONFIG_ENV_KEY, KUBECONFIG_DEFAULT_PATH))
 	filePtr := flag.String("file", "", "path to the yaml file that to be append into kubeconfig")
-	namePtr := flag.String("name", "", "Replaces the name of context, user and cluster (default file name of --file argument)")
-	overridePtr := flag.Bool("override", false, "Override the existing context, user and cluster with the same name")
+	overridePtr := flag.Bool("override", false, "Override the existing context, user and cluster with the file name, or the fields in the file will be used")
 	flag.Parse()
 
 	var kubeConfigPath = getKubeConfigPath(*kubeConfigPtr)
@@ -226,10 +225,8 @@ func main() {
 
 	var fileName = filepath.Base(*filePtr)
 	fileName = strings.TrimSuffix(fileName, filepath.Ext(fileName))
-	if len(*namePtr) > 0 {
-		fileName = *namePtr
-	}
-	result, err := Merge(*kubeConfig, *toBeAppend, *namePtr, *overridePtr)
+	fileName = strings.ToLower(fileName)
+	result, err := Merge(*kubeConfig, *toBeAppend, fileName, *overridePtr)
 	if err != nil {
 		log.Panic(err)
 	}
